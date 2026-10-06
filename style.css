@@ -66,6 +66,11 @@ li {
   justify-content: space-between;
   align-items: center;
 }
+
+.overdue{
+    border-left-color : #c0392b;
+    background-color: #fdecea;
+}
 li button{
     padding: 6px 12px;
     font-size: 14px;
