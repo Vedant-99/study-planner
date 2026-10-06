@@ -1,0 +1,65 @@
+/* The whole page */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6fb;
+  max-width: 600px;
+  margin: 40px auto;      /* auto centers the page left and right */
+  padding: 0 16px;
+}
+
+h1 {
+  text-align: center;
+  color: #2d3a8c;
+}
+
+h2 {
+  color: #2d3a8c;
+}
+
+/* The form box */
+.form {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+form {
+  display: flex;
+  flex-direction: column; /* boxes stack top to bottom */
+  gap: 10px;              /* space between the boxes */
+}
+
+input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #2d3a8c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1f2a6b;
+}
+
+/* The task list */
+ul {
+  list-style: none;       /* removes the bullet dots */
+  padding: 0;
+}
+
+li {
+  background: white;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border-left: 5px solid #2d3a8c;
+}
