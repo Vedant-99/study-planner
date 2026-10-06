@@ -32,6 +32,23 @@ function rendorTasks(){
             rendorTasks();
         });
 
+        // The Delete Button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent ="Delete";
+        deleteBtn.classList.add("delete");
+        deleteBtn.addEventListener("click",function(){
+            tasks.splice(index,1);      // remove 1 task at this position
+            saveTasks();
+            rendorTasks();
+
+        });
+
+        // Put both buttons in one box so they sit together
+        const actions = document.createElement("div");
+        actions.classList.add("actions");
+        actions.appendChild(doneBtn);
+        actions.appendChild(deleteBtn);
+
         li.appendChild(text);
         li.appendChild(doneBtn);
         list.appendChild(li);

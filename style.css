@@ -74,3 +74,13 @@ li button{
     text-decoration: line-through;
     color: grey;
 }
+.actions{
+    display: flex;
+    gap:6px;
+}
+.delete{
+    background-color: #c0392b; /* red */
+}
+.delete:hover{
+    background-color: #96281b;
+}
