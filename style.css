@@ -62,4 +62,15 @@ li {
   margin-bottom: 8px;
   border-radius: 8px;
   border-left: 5px solid #2d3a8c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+li button{
+    padding: 6px 12px;
+    font-size: 14px;
+}
+.done{
+    text-decoration: line-through;
+    color: grey;
 }
