@@ -11,7 +11,7 @@ function saveTasks(){
 }
 
 // Draw all tasks on the page
-function rendorTasks(){
+function renderTasks(){
     list.innerHTML ="";     // Empty the list first
     tasks.forEach(function (t, index){      // do this for every task
         const li = document.createElement("li");
@@ -29,7 +29,7 @@ function rendorTasks(){
         doneBtn.addEventListener("click", function(){
             tasks[index].done = !tasks[index].done; // flip true <-> false
             saveTasks();
-            rendorTasks();
+            renderTasks();
         });
 
         // The Delete Button
@@ -39,7 +39,7 @@ function rendorTasks(){
         deleteBtn.addEventListener("click",function(){
             tasks.splice(index,1);      // remove 1 task at this position
             saveTasks();
-            rendorTasks();
+            renderTasks();
 
         });
 
@@ -50,7 +50,7 @@ function rendorTasks(){
         actions.appendChild(deleteBtn);
 
         li.appendChild(text);
-        li.appendChild(doneBtn);
+        li.appendChild(actions);
         list.appendChild(li);
     });
 }
@@ -69,10 +69,10 @@ form.addEventListener("submit",function(event){
     tasks.push({ subject: subject, task: task , date: date, done: false });
 
     saveTasks();        // save taks to browser
-    rendorTasks();      // redraw the list
+    renderTasks();      // redraw the list
     
     //  Empty the boxes so the user can type next task
     form.reset();
 });
 
-rendorTasks();
+renderTasks();
