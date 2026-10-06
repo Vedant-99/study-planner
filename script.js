@@ -13,7 +13,12 @@ function saveTasks(){
 // Draw all tasks on the page
 function renderTasks(){
     list.innerHTML ="";     // Empty the list first
-    const today = new Date().toLocaleDateString("en-CA")        // gives today's date like 2026-10-07
+    
+    const today = new Date().toLocaleDateString("en-CA");        // gives today's date like 2026-10-07
+    
+    tasks.sort(function(a,b){
+        return a.date.localeCompare(b.date);
+    });
     tasks.forEach(function (t, index){      // do this for every task
         const li = document.createElement("li");
         if(t.date < today && !t.done){
