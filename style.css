@@ -89,3 +89,11 @@ li button{
 .delete:hover{
     background-color: #96281b;
 }
+select {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
