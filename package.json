@@ -1,0 +1,24 @@
+{
+  "name": "studyplanner",
+  "version": "1.0.0",
+  "description": "A web app to track subjects, tasks and deadlines.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vedant-99/study-planner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Vedant-99/study-planner/issues"
+  },
+  "homepage": "https://github.com/Vedant-99/study-planner#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
