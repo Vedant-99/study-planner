@@ -29,6 +29,8 @@ app.get("/api/tasks", function (req, res) {
 });
 let nextId = 3;   // the next free id
 
+
+// Post(add a task)
 app.post("/api/tasks", function (req, res) {
   const newTask = {
     id: nextId++,
@@ -40,6 +42,16 @@ app.post("/api/tasks", function (req, res) {
   tasks.push(newTask);
   res.status(201).json(newTask);   // 201 means "created"
 });
+
+// Delete(remove a task)
+app.delete("/api/tasks/:id", function (req, res) {
+  const id = Number(req.params.id);   // :id from the address, turned into a number
+  tasks = tasks.filter(function (t) {
+    return t.id !== id;               // keep every task except this one
+  });
+  res.json({ message: "Task deleted" });
+});
+
 // Start the server 
 app.listen(PORT ,function(){
     console.log("Server running at http://localhost:"+ PORT);
