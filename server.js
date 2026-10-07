@@ -4,6 +4,8 @@ const express = require("express");
 // Create our app
 const app = express();
 
+app.use(express.json());   // lets the server read JSON sent by the browser
+
 // Choose a "door number" (port) where the server listens
 const PORT = 4000;
 
@@ -25,7 +27,19 @@ let tasks = [
 app.get("/api/tasks", function (req, res) {
   res.json(tasks);
 });
+let nextId = 3;   // the next free id
 
+app.post("/api/tasks", function (req, res) {
+  const newTask = {
+    id: nextId++,
+    subject: req.body.subject,
+    task: req.body.task,
+    date: req.body.date,
+    done: false
+  };
+  tasks.push(newTask);
+  res.status(201).json(newTask);   // 201 means "created"
+});
 // Start the server 
 app.listen(PORT ,function(){
     console.log("Server running at http://localhost:"+ PORT);
