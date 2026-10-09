@@ -7,6 +7,9 @@
   "start": "node server.js",
   "dev": "node --watch server.js"
 },
+"engines": {
+  "node": ">=22.13"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Vedant-99/study-planner.git"
