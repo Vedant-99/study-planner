@@ -114,3 +114,31 @@ select {
     flex:1;
   }
 }
+
+/* Used to hide a section */
+.hidden {
+  display: none;
+}
+
+/* Error message under the login form */
+.message {
+  color: #c0392b;
+  min-height: 1.2em;
+}
+
+#auth-toggle {
+  color: #2d3a8c;
+}
+
+/* Bar with the user's email and the logout button */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.topbar button {
+  padding: 6px 12px;
+  font-size: 14px;
+}

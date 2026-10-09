@@ -2,6 +2,16 @@
 const form = document.getElementById("task-form");
 const list = document.getElementById("task-list");
 const filter = document.getElementById("filter");
+const authSection = document.getElementById("auth-section");
+const appSection = document.getElementById("app-section");
+const authForm = document.getElementById("auth-form");
+const authTitle = document.getElementById("auth-title");
+const authSubmit = document.getElementById("auth-submit");
+const authMessage = document.getElementById("auth-message");
+const authToggle = document.getElementById("auth-toggle");
+const userEmail = document.getElementById("user-email");
+const logoutBtn = document.getElementById("logout-btn");
+let isSignupMode = false;   // false = log in, true = sign up
 let selectedSubject = "all";
 let tasks = []; // starts empty -> the server will fill it
 
@@ -9,9 +19,8 @@ let tasks = []; // starts empty -> the server will fill it
 // Ask the server for all the tasks, then draw them
 async function loadTasks() {
   const response = await fetch("/api/tasks");
-  if (!response.ok) {          // for example 401: not logged in
-    tasks = [];
-    renderTasks();
+  if (response.status === 401) {   // not logged in
+    showAuth();
     return;
   }
   tasks = await response.json();
@@ -120,4 +129,80 @@ filter.addEventListener("change", function () {
     renderTasks();                    // redraw with the filter
 });
 
-loadTasks(); // first load when the page opens
+// Show the login screen
+function showAuth() {
+  authSection.classList.remove("hidden");
+  appSection.classList.add("hidden");
+}
+
+// Show the planner for a logged-in user
+function showApp(user) {
+  userEmail.textContent = user.email;
+  appSection.classList.remove("hidden");
+  authSection.classList.add("hidden");
+  loadTasks();
+}
+
+// On page load: ask the server who is logged in
+async function checkLogin() {
+  const response = await fetch("/api/me");
+  if (response.ok) {
+    showApp(await response.json());
+  } else {
+    showAuth();
+  }
+}
+
+// Switch between "Log in" and "Sign up"
+authToggle.addEventListener("click", function (event) {
+  event.preventDefault();
+  isSignupMode = !isSignupMode;
+  authTitle.textContent = isSignupMode ? "Create account" : "Log in";
+  authSubmit.textContent = isSignupMode ? "Sign up" : "Log in";
+  authToggle.textContent = isSignupMode
+    ? "Already have an account? Log in"
+    : "New here? Create an account";
+  authMessage.textContent = "";
+});
+
+// Submit the login / sign-up form
+authForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const email = document.getElementById("auth-email").value;
+  const password = document.getElementById("auth-password").value;
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email, password: password })
+  };
+  authMessage.textContent = "";
+
+  // For sign-up: create the account first, then log in below
+  if (isSignupMode) {
+    const signupResponse = await fetch("/api/signup", options);
+    const signupData = await signupResponse.json();
+    if (!signupResponse.ok) {
+      authMessage.textContent = signupData.message;
+      return;
+    }
+  }
+
+  const loginResponse = await fetch("/api/login", options);
+  const loginData = await loginResponse.json();
+  if (!loginResponse.ok) {
+    authMessage.textContent = loginData.message;
+    return;
+  }
+
+  authForm.reset();
+  showApp(loginData);
+});
+
+// Log out
+logoutBtn.addEventListener("click", async function () {
+  await fetch("/api/logout", { method: "POST" });
+  tasks = [];
+  showAuth();
+});
+
+checkLogin();   // runs when the page opens

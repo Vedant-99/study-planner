@@ -8,14 +8,37 @@
 </head>
 <body>
     <h1>Study-Planner</h1>
+    <!-- Login / sign-up screen-->
+     <section id="auth-section" class="hidden">
+        <div class ="form">
+            <h2 id ="auth-title">Log in</h2>
+            <form id="auth-form">
+                <input id ="auth-email" type="email" placeholder="Email" required>
+                <input id ="auth-password" type="password" placeholder="Password (at least 6 characters)" required>
+                <button type="submit" id ="auth-submit">Log in</button>
+            </form>
+            <p id ="auth-message" class ="message"></p>
+            <a href="#" id ="auth-toggle">New here? Create an account</a>
+        </div>
+     </section>
+
+    <!-- The planner (shown only when logged in) -->
+    <section id ="app-section" class ="hidden">
+        <div class ="topbar">
+            <span id="user-email"></span>
+            <button id ="logout-btn" type="button">Log out</button>
+        </div>
+
+
     <div class="form">
-        <form id="task-form" action="">
+        <form id="task-form">
             <input id="subject" type="text" placeholder="Enter Subject" required>
             <input id="task" type="text" placeholder="Enter Task" required>
             <input id="date" type="date" required>
             <button class="submit">Add Task</button>
         </form>
     </div>
+    
     <h2>My Tasks </h2>
     <select id="filter">
         <option value="all">All subjects</option>
