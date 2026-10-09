@@ -10,17 +10,6 @@ const app = express();
 const db = new DatabaseSync("tasks.db");  // Open (or Create) the database file
 const PORT = 4000;  // Choose a "door number" (port) where the server listens
 
-
-// Create the tasks table if it does not exists yet
-db.exec(`
-  CREATE TABLE IF NOT EXISTS tasks (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  subject TEXT NOT NULL,
-  task TEXT NOT NULL,
-  date TEXT NOT NULL,
-  done INTEGER NOT NULL DEFAULT 0 
-  )
-`);
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,6 +17,20 @@ db.exec(`
     password_hash TEXT NOT NULL
   )
 `);
+
+// Create the tasks table if it does not exists yet
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  subject TEXT NOT NULL,
+  task TEXT NOT NULL,
+  date TEXT NOT NULL,
+  done INTEGER NOT NULL DEFAULT 0,
+  FOREIGN KEY (user_id) REFERENCES users(id) 
+  )
+`);
+
 // Middleware: read JSON from the browser, and serve the "public" folder
 app.use(express.json());   // lets the server read JSON sent by the browser
 app.use(express.static("public"));  // Serve the files inside the "public" folder to the browser
