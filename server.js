@@ -19,7 +19,13 @@ db.exec(`
   done INTEGER NOT NULL DEFAULT 0 
   )
 `);
-
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL
+  )
+`);
 // Middleware: read JSON from the browser, and serve the "public" folder
 app.use(express.json());   // lets the server read JSON sent by the browser
 app.use(express.static("public"));  // Serve the files inside the "public" folder to the browser
