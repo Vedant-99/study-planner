@@ -137,6 +137,16 @@ app.post("/api/login", function(req, res){
 });
 
 
+// WHO AM I: tells the page who is logged in
+app.get("/api/me", function(req ,res){
+  if(!req.session.userID){
+    return res.status(401).json({message: "Not logged in"});
+  }
+  const user = db
+    .prepare("SELECT id, email FROM users WHERE id =?")
+    .get(req.session.userID);
+  res.json(user);
+});
 
 
 
