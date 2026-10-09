@@ -3,13 +3,14 @@ const form = document.getElementById("task-form");
 const list = document.getElementById("task-list");
 const filter = document.getElementById("filter");
 let selectedSubject = "all";
+let tasks = []; // starts empty -> the server will fill it
 
-// Load saved tasks. If nothing is saved yet, start with an empty array
-let tasks = JSON.parse(localStorage.getItem("tasks"))|| [];
 
-// Save the tasks array into the browser
-function saveTasks(){
-    localStorage.setItem("tasks",JSON.stringify(tasks));
+// Ask the server for all the tasks, then draw them
+async function loadTasks() {
+    const response = await fetch("/api/tasks");
+    tasks = await response.json();
+    renderTasks();
 }
 
 // Fill the dropdown with subject we have:
@@ -42,7 +43,7 @@ function renderTasks(){
     tasks.sort(function(a,b){
         return a.date.localeCompare(b.date);
     });
-    tasks.forEach(function (t, index){      // do this for every task
+    tasks.forEach(function (t){      // do this for every task
          if (selectedSubject !== "all" && t.subject !== selectedSubject) {
          return;   // skip this task, go to the next one
         }
@@ -58,24 +59,21 @@ function renderTasks(){
             text.classList.add("done");     // adds CSS class "done"
         }
 
-        // The Done button
+        // The Done button : Tell the server to flip done then reload
         const doneBtn = document.createElement("button");
         doneBtn.textContent = t.done ? "Undo" : "Done";
-        doneBtn.addEventListener("click", function(){
-            tasks[index].done = !tasks[index].done; // flip true <-> false
-            saveTasks();
-            renderTasks();
+        doneBtn.addEventListener("click", async function(){
+            await fetch("/api/tasks/" +t.id, { method: "PUT"});
+            loadTasks();
         });
 
-        // The Delete Button
+        // The Delete Button :  tell the server to delete then reload
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent ="Delete";
         deleteBtn.classList.add("delete");
-        deleteBtn.addEventListener("click",function(){
-            tasks.splice(index,1);      // remove 1 task at this position
-            saveTasks();
-            renderTasks();
-
+        deleteBtn.addEventListener("click", async function(){
+            await fetch("/api/tasks/"+ t.id, {method: "DELETE"});
+            loadTasks();
         });
         
 
@@ -91,8 +89,9 @@ function renderTasks(){
     });
 }
 
+
 //  When the form is submitted, we run this function
-form.addEventListener("submit",function(event){
+form.addEventListener("submit", async function(event){
     // Prevents/Stops the page from reloading
     event.preventDefault();
 
@@ -101,18 +100,19 @@ form.addEventListener("submit",function(event){
     const task = document.getElementById("task").value;
     const date = document.getElementById("date").value;
 
-    // Add one task object into array
-    tasks.push({ subject: subject, task: task , date: date, done: false });
-
-    saveTasks();        // save taks to browser
-    renderTasks();      // redraw the list
+    await fetch("/api/tasks",{
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ subject: subject, task: task, date: date})
+    });
     
     //  Empty the boxes so the user can type next task
     form.reset();
+    loadTasks();
 });
 filter.addEventListener("change", function () {
     selectedSubject = filter.value;   // remember the choice
     renderTasks();                    // redraw with the filter
 });
 
-renderTasks();
+loadTasks(); // first load when the page opens
