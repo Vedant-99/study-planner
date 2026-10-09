@@ -8,7 +8,7 @@ const session = require("express-session");
 // Create our app and open the database file
 const app = express();
 const db = new DatabaseSync("tasks.db");  // Open (or Create) the database file
-const PORT = 4000;  // Choose a "door number" (port) where the server listens
+const PORT = process.env.PORT || 4000;  // use the host's port, or 4000 on your computer
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
