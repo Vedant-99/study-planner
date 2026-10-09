@@ -49,6 +49,14 @@ app.use(
   })
 );
 
+// Middelware:  runs before a route , and blocks user who are not logged in
+function requireLogin(req, res, next){
+  if(!req.session.userId){
+    return res.status(401).json({message: "Please log in"});
+  }
+  next();     // logged in, so continue to the real route
+}
+
 
 // When the browser asks for the home page "/", reply with some text
 app.get("/hello",function(req,res){
