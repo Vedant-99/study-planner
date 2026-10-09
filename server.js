@@ -131,7 +131,7 @@ app.post("/api/login", function(req, res){
   
   }
   
-  req.session.userID = user.id;   // remember this user in the session
+  req.session.userId = user.id;   // remember this user in the session
   res.json({ id: user.id, email : user.email});
 
 });
@@ -139,18 +139,18 @@ app.post("/api/login", function(req, res){
 
 // WHO AM I: tells the page who is logged in
 app.get("/api/me", function(req ,res){
-  if(!req.session.userID){
+  if(!req.session.userId){
     return res.status(401).json({message: "Not logged in"});
   }
   const user = db
     .prepare("SELECT id, email FROM users WHERE id =?")
-    .get(req.session.userID);
+    .get(req.session.userId);
   res.json(user);
 });
 
 // LOG OUT
 app.post("/api/logout", function(req, res){
-  res.session.destroy(function() {
+  req.session.destroy(function() {
     res.json({message: "Logged out" });
   });
 });
