@@ -148,7 +148,12 @@ app.get("/api/me", function(req ,res){
   res.json(user);
 });
 
-
+// LOG OUT
+app.post("/api/logout", function(req, res){
+  res.session.destroy(function() {
+    res.json({message: "Logged out" });
+  });
+});
 
 // Start the server 
 app.listen(PORT ,function(){
