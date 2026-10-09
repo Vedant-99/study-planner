@@ -8,9 +8,14 @@ let tasks = []; // starts empty -> the server will fill it
 
 // Ask the server for all the tasks, then draw them
 async function loadTasks() {
-    const response = await fetch("/api/tasks");
-    tasks = await response.json();
+  const response = await fetch("/api/tasks");
+  if (!response.ok) {          // for example 401: not logged in
+    tasks = [];
     renderTasks();
+    return;
+  }
+  tasks = await response.json();
+  renderTasks();
 }
 
 // Fill the dropdown with subject we have:
