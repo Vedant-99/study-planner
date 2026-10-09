@@ -1,6 +1,21 @@
 // Bring in the express library
 const express = require("express");
 
+// Open (or Create) the database file
+const { DatabaseSync } = require("node:sqlite");
+const db = new DatabaseSync("tasks.db");
+
+// Create the tasks table if it does not exists yet
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  subject TEXT NOT NULL,
+  task TEXT NOT NULL,
+  date TEXT NOT NULL,
+  done INTEGER NOT NULL DEFAULT 0 
+  )
+`);
+
 // Create our app
 const app = express();
 
