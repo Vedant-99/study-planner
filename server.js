@@ -118,6 +118,28 @@ app.post("/api/signup", function (req, res){
 });
 
 
+// LOG IN
+app.post("/api/login", function(req, res){
+  const email = (req.body.email || "").trim().toLowerCase();
+  const password = req.body.password || "";
+
+  const user = db.prepare("SELECT *FROM users WHERE email =?").get(email);
+
+  // Same message for both mistakes, so attackers can't tell which email exists
+  if(!user || !bcrypt.compareSync(password, user.password_hash)){
+    return res.status(401).json({message: "Invalid email or password" });
+  
+  }
+  
+  req.session.userID = user.id;   // remember this user in the session
+  res.json({ id: user.id, email : user.email});
+
+});
+
+
+
+
+
 // Start the server 
 app.listen(PORT ,function(){
     console.log("Server running at http://localhost:"+ PORT);
