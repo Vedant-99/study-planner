@@ -27,6 +27,7 @@ let tasks = [
 app.get("/api/tasks", function (req, res) {
   res.json(tasks);
 });
+
 let nextId = 3;   // the next free id
 
 
@@ -50,6 +51,19 @@ app.delete("/api/tasks/:id", function (req, res) {
     return t.id !== id;               // keep every task except this one
   });
   res.json({ message: "Task deleted" });
+});
+
+// Put( toggle done)
+app.put("/api/tasks/:id",function(req,res){
+    const id = Number(req.params.id);
+    const t = tasks.find(function(item){
+        return item.id === id;
+    });
+    if(!t){
+        return res.status(404).json({message: "Tasks not found"});
+    }
+    t.done = !t.done;   //flip true <-> false;
+    res.json(t);
 });
 
 // Start the server 
