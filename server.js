@@ -73,7 +73,22 @@ app.get("/api/tasks", requireLogin, function( req, res){
 
 // Create: add a task that belong to me 
 app.post("/api/tasks", requireLogin, function(req,res){
-  const {subject, task, date} = req.body;
+  const subject = (req.body.subject || "").trim();
+  const task = (req.body.task || "").trim();
+  const date = req.body.date || "";
+
+  // Check the input before saving anything
+  if (
+    !subject ||
+    !task ||
+    subject.length > 50 ||
+    task.length > 200 ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(date)
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Subject, task and a valid date (YYYY-MM-DD) are required" });
+  }
   const result = db
   .prepare("INSERT INTO tasks (user_id,subject, task, date) VALUES (?,?,?,?)")
   .run(req.session.userId,subject, task, date);
