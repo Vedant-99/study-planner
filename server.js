@@ -1,6 +1,7 @@
 // Bring in the express library
 const express = require("express");
 const { DatabaseSync } = require("node:sqlite");
+const bcrypt = require("bcryptjs");
 
 
 // Create our app and open the database file
@@ -74,6 +75,32 @@ app.put("/api/tasks/:id", function (req, res){
   res.json(task);
 });
 
+
+// SIGN UP: create a new user
+app.post("/api/signup", function (req, res){
+  const email = (req.body.email || "").trim().toLowerCase();
+  const password = req.body.password || "";
+  
+  // check the input
+  if(!email || password.length <6){
+    return res
+    .status(400)
+    .json({ message: "Email and a password of at least 6 characters are required" });
+  }
+
+  // Is this eamil already used?
+  const existing = db.prepare("SELECT id FROM users WHERE email =?").get(email);
+  if(existing){
+    return res.status(409).json({ message: "Email already registered" });
+  }
+
+  // Scramble the password, then save only the scrambled version
+  const hash = bcrypt.hashSync(password,10);
+  const result = db
+    .prepare("INSERT INTO users (email, password_hash) VALUES (?,?)")
+    .run(email,hash);
+  res.status(201).json({ id: Number(result.lastInsertRowid), email });
+});
 
 
 // Start the server 
