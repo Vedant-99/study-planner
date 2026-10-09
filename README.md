@@ -2,6 +2,10 @@
 
 A full-stack web app where students sign up, log in and keep track of their subjects, tasks and deadlines.
 
+**Live demo:** https://your-app-name.onrender.com
+
+> Demo note: this runs on a free plan, so the first load can take ~40 seconds and data resets on restart. Test login: demo@example.com / demo123
+
 ## Features
 - Sign up, log in and log out (passwords hashed with bcrypt, login kept with a session cookie)
 - Every user sees only their own tasks
