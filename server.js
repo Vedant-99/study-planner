@@ -63,18 +63,20 @@ app.get("/hello",function(req,res){
     res.send("Hello from my server!");
 });
 
-// Read: get all tasks
-app.get("/api/tasks", function( req, res){
-  const tasks = db.prepare("SELECT * FROM tasks").all();
+// Read: only my tasks
+app.get("/api/tasks", requireLogin, function( req, res){
+  const tasks = db
+    .prepare("SELECT * FROM tasks WHERE user_id=?")
+    .all(req.session.userId);
   res.json(tasks);
 });
 
-// Create: add a task
-app.post("/api/tasks", function(req,res){
+// Create: add a task that belong to me 
+app.post("/api/tasks", requireLogin, function(req,res){
   const {subject, task, date} = req.body;
   const result = db
-  .prepare("INSERT INTO tasks (subject, task, date) VALUES (?,?,?)")
-  .run(subject, task, date);
+  .prepare("INSERT INTO tasks (user_id,subject, task, date) VALUES (?,?,?,?)")
+  .run(req.session.userId,subject, task, date);
 res.status(201).json({
   id: Number(result.lastInsertRowid),
   subject,
@@ -85,18 +87,23 @@ res.status(201).json({
 });
 
 
-// DELETE: remove a task
-app.delete("/api/tasks/:id", function(req,res){
-  db.prepare("DELETE FROM tasks WHERE id = ?").run(Number(req.params.id));
+// DELETE: remove a task only if it is mine
+app.delete("/api/tasks/:id", requireLogin,function(req,res){
+  db.prepare("DELETE FROM tasks WHERE id = ? AND user_id=?")
+    .run(Number(req.params.id), req.session.userId);
   res.json({ message: "Task deleted" });
 });
 
 
 // UPDATE: flip done on a task
-app.put("/api/tasks/:id", function (req, res){
+app.put("/api/tasks/:id", requireLogin, function (req, res){
   const id = Number(req.params.id);
-  const result = db.prepare("UPDATE tasks SET done = NOT done WHERE id = ?").run(id);
+  const result = db
+    .prepare("UPDATE tasks SET done = NOT done WHERE id = ? AND user_id=?")
+    .run(id,req.session.userId);
+
   if( result.changes === 0) return res.status(404).json({ message: "Task not found" });
+
   const task = db.prepare("SELECT * FROM tasks WHERE id = ?").get(id);
   res.json(task);
 });
