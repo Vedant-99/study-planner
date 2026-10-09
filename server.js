@@ -2,6 +2,7 @@
 const express = require("express");
 const { DatabaseSync } = require("node:sqlite");
 const bcrypt = require("bcryptjs");
+const session = require("express-session");
 
 
 // Create our app and open the database file
@@ -30,6 +31,20 @@ db.exec(`
 // Middleware: read JSON from the browser, and serve the "public" folder
 app.use(express.json());   // lets the server read JSON sent by the browser
 app.use(express.static("public"));  // Serve the files inside the "public" folder to the browser
+
+// Sessions: remember who is logged in using a cookie
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev-secret-change-me",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,   // JS in the page can not read the cookie
+      sameSite: "lax",
+      maxAge: 1000*60*60*24*7   // Stays logged in for 7 days
+    }
+  })
+);
 
 
 // When the browser asks for the home page "/", reply with some text
