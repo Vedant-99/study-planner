@@ -1,9 +1,13 @@
 // Bring in the express library
 const express = require("express");
-
-// Open (or Create) the database file
 const { DatabaseSync } = require("node:sqlite");
-const db = new DatabaseSync("tasks.db");
+
+
+// Create our app and open the database file
+const app = express();
+const db = new DatabaseSync("tasks.db");  // Open (or Create) the database file
+const PORT = 4000;  // Choose a "door number" (port) where the server listens
+
 
 // Create the tasks table if it does not exists yet
 db.exec(`
@@ -16,70 +20,55 @@ db.exec(`
   )
 `);
 
-// Create our app
-const app = express();
-
+// Middleware: read JSON from the browser, and serve the "public" folder
 app.use(express.json());   // lets the server read JSON sent by the browser
+app.use(express.static("public"));  // Serve the files inside the "public" folder to the browser
 
-// Choose a "door number" (port) where the server listens
-const PORT = 4000;
-
-// Serve the files inside the "public" folder to the browser
-app.use(express.static("public"));
 
 // When the browser asks for the home page "/", reply with some text
 app.get("/hello",function(req,res){
     res.send("Hello from my server!");
 });
 
-// For now, tasks live in a list inside the server (a database comes later)
-let tasks = [
-  { id: 1, subject: "DBMS", task: "ACID Properties", date: "2026-10-12", done: false },
-  { id: 2, subject: "CN", task: "IP4", date: "2026-10-15", done: false }
-];
-
-// When someone asks for /api/tasks, send back the tasks as JSON
-app.get("/api/tasks", function (req, res) {
+// Read: get all tasks
+app.get("/api/tasks", function( req, res){
+  const tasks = db.prepare("SELECT * FROM tasks").all();
   res.json(tasks);
 });
 
-let nextId = 3;   // the next free id
-
-
-// Post(add a task)
-app.post("/api/tasks", function (req, res) {
-  const newTask = {
-    id: nextId++,
-    subject: req.body.subject,
-    task: req.body.task,
-    date: req.body.date,
-    done: false
-  };
-  tasks.push(newTask);
-  res.status(201).json(newTask);   // 201 means "created"
+// Create: add a task
+app.post("/api/tasks", function(req,res){
+  const {subject, task, date} = req.body;
+  const result = db
+  .prepare("INSERT INTO tasks (subject, task, date) VALUES (?,?,?)")
+  .run(subject, task, date);
+res.status(201).json({
+  id: Number(result.lastInsertRowid),
+  subject,
+  task,
+  date,
+  done:0
+});
 });
 
-// Delete(remove a task)
-app.delete("/api/tasks/:id", function (req, res) {
-  const id = Number(req.params.id);   // :id from the address, turned into a number
-  tasks = tasks.filter(function (t) {
-    return t.id !== id;               // keep every task except this one
-  });
+
+// DELETE: remove a task
+app.delete("/api/tasks/:id", function(req,res){
+  db.prepare("DELETE FROM tasks WHERE id = ?").run(Number(req.params.id));
   res.json({ message: "Task deleted" });
 });
 
-// Put( toggle done)
-app.put("/api/tasks/:id",function(req,res){
-    const id = Number(req.params.id);
-    const t = tasks.find(function(item){
-        return item.id === id;
-    });
-    if(!t){
-        return res.status(404).json({message: "Tasks not found"});
-    }
-    t.done = !t.done;   //flip true <-> false;
-    res.json(t);
+
+// UPDATE: flip done on a task
+app.put("/api/tasks/:id", function (req, res){
+  const id = Number(req.params.id);
+  const result = db.prepare("UPDATE tasks SET done = NOT done WHERE id = ?").run(id);
+  if( result.changes === 0) return res.status(404).json({ message: "Task not found" });
+  const task = db.prepare("SELECT * FROM tasks WHERE id = ?").get(id);
+  res.json(task);
 });
+
+
 
 // Start the server 
 app.listen(PORT ,function(){
